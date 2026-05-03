@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
               <GithubOutlined /> 咕噜咕噜
             </>
           ),
-          href: 'https://github.com/liyupi',
+          href: 'https://github.com/Octaver2131',
           blankTarget: true,
         },
         {
