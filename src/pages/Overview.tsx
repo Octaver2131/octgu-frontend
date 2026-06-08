@@ -49,10 +49,13 @@ const Overview: React.FC = () => {
   const [statistics, setStatistics] = useState<Record<string, any>>({});
   // 定义图表数据状态
   const [chartData, setChartData] = useState([]);
+  // 定义本年支出状态（根据月度数据计算）
+  const [currentYearExpense, setCurrentYearExpense] = useState<number>(0);
 
   // 处理年份变化
   const handleYearChange = (date: dayjs.Dayjs | null) => {
     setYear(date);
+    setCurrentYearExpense(0); // 切换年份时重置支出
   };
 
   // 获取统计数据
@@ -64,7 +67,7 @@ const Overview: React.FC = () => {
     });
   }, []);
 
-  // 获取每月统计数据
+  // 获取每月统计数据并计算本年支出
   useEffect(() => {
     // 从year状态中提取年份，如果没有选择年份则使用当前年份
     const selectedYear = year ? year.year() : dayjs().year();
@@ -79,6 +82,10 @@ const Overview: React.FC = () => {
         
         // 更新图表数据
         setChartData(formattedData);
+        
+        // 计算本年支出（月度数据总和）
+        const totalExpense = formattedData.reduce((sum, item) => sum + (item['支出'] || 0), 0);
+        setCurrentYearExpense(totalExpense);
       }
     });
   }, [year]);
@@ -106,7 +113,7 @@ const Overview: React.FC = () => {
           </div>
           <div style={{ flex: 1, padding: 16, backgroundColor: '#f0f2f5', borderRadius: 8 }}>
             <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>本年支出</div>
-            <div style={{ fontSize: 24, fontWeight: 'bold' }}>{formatCurrency(statistics.yearExpense)}</div>
+            <div style={{ fontSize: 24, fontWeight: 'bold' }}>{formatCurrency(currentYearExpense)}</div>
           </div>
           <div style={{ flex: 1, padding: 16, backgroundColor: '#f0f2f5', borderRadius: 8 }}>
             <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>最喜欢的IP</div>

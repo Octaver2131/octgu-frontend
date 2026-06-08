@@ -29,13 +29,13 @@ const Item: React.FC = () => {
 
   // 表格数据状态
   const [data, setData] = useState<DataType[]>([]);
-  
+
   // 搜索关键词状态
   const [searchText, setSearchText] = useState<string>('');
-  
+
   // 选定的日期状态
   const [selectedDate, setSelectedDate] = useState<string>('');
-  
+
   // 加载数据
   const loadData = async () => {
     try {
@@ -51,11 +51,11 @@ const Item: React.FC = () => {
           current,
           pageSize
         });
-        
+
         if (res.data?.records) {
           // 将当前页数据添加到总数据中
           allItems = [...allItems, ...res.data.records];
-          
+
           // 检查是否还有更多数据
           // 如果当前页数据少于pageSize，说明已经是最后一页
           if (res.data.records.length < pageSize) {
@@ -73,7 +73,7 @@ const Item: React.FC = () => {
       // 处理所有数据并设置到状态中
       // 调试：打印原始数据结构
       console.log('原始数据:', allItems);
-      
+
       const items = allItems.map(item => ({
         key: String(item.id),
         name: item.itemName || '',
@@ -85,7 +85,7 @@ const Item: React.FC = () => {
         date: item.purchaseTime ? moment(item.purchaseTime).format('YYYY-MM-DD') : '',
         description: item.description || ''
       }));
-      
+
       // 调试：打印处理后的数据结构
       console.log('处理后的数据:', items);
       setData(items);
@@ -99,7 +99,7 @@ const Item: React.FC = () => {
   const exportToCSV = () => {
     // 定义CSV表头
     const headers = ['名字', '描述', 'IP', '种类', '数量', '单价', '总价', '日期'];
-    
+
     // 将数据转换为CSV格式
     const csvContent = [
       headers.join(','),
@@ -114,7 +114,7 @@ const Item: React.FC = () => {
         item.date
       ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
     ].join('\n');
-    
+
     // 创建下载链接
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -131,18 +131,18 @@ const Item: React.FC = () => {
   useEffect(() => {
     loadData();
   }, []);
-  
+
   // 根据搜索关键词和选定日期过滤数据
   const filteredData = data.filter(item => {
     // 搜索过滤条件
-    const matchesSearch = 
+    const matchesSearch =
       (item.name && item.name.toLowerCase().includes(searchText.toLowerCase())) ||
       (item.ip && item.ip.toLowerCase().includes(searchText.toLowerCase())) ||
       (item.category && item.category.toLowerCase().includes(searchText.toLowerCase()));
-    
+
     // 日期过滤条件 - 比较年月部分
     const matchesDate = selectedDate ? item.date.startsWith(selectedDate) : true;
-    
+
     // 同时满足搜索和日期条件
     return matchesSearch && matchesDate;
   });
@@ -354,29 +354,29 @@ const Item: React.FC = () => {
       key: 'price',
       render: (price) => `¥${price.toFixed(2)}`,
     },
+    // {
+    //   title: '总价',
+    //   dataIndex: 'totalPrice',
+    //   key: 'totalPrice',
+    //   render: (totalPrice) => `¥${totalPrice.toFixed(2)}`,
+    // },
     {
-      title: '总价',
-      dataIndex: 'totalPrice',
-      key: 'totalPrice',
-      render: (totalPrice) => `¥${totalPrice.toFixed(2)}`,
-    },
-    {      
-      title: '日期',      
-      dataIndex: 'date',      
-      key: 'date',    
+      title: '日期',
+      dataIndex: 'date',
+      key: 'date',
       sorter: (a, b) => moment(a.date, 'YYYY-MM-DD').valueOf() - moment(b.date, 'YYYY-MM-DD').valueOf(),
       sortDirections: ['ascend', 'descend'],
-    },    
-    {      
-      title: '操作',     
-       key: 'action',     
-       width: 150,      
-       render: (_, record) => (        
-        <div style={{ display: 'flex', gap: 8 }}>          
-          <Button type="primary" onClick={() => handleEdit(record)}>编辑</Button>         
-          <Button type="default" onClick={() => handleDelete(record)}>删除</Button>        
-        </div>      
-      ),    
+    },
+    {
+      title: '操作',
+       key: 'action',
+       width: 150,
+       render: (_, record) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button type="primary" onClick={() => handleEdit(record)}>编辑</Button>
+          <Button type="default" onClick={() => handleDelete(record)}>删除</Button>
+        </div>
+      ),
     },
   ];
 
